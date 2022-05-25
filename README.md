@@ -2,8 +2,6 @@
 **Scripts to use with PPKG package to automate computer setup process**
 
 A collection of scripts that can be ran from a PPKG file to install applications and system updates
-  
-  Note: For MacOS it installs nmap as a prerequisite.
 
 ```
 Commands: (All Commands use ContinueInstall True and RestartRequired False)
