@@ -3,7 +3,7 @@
 
 A collection of scripts that are used with the Windows Configuration Designer to build a PPKG file. The scripts will do the following:
 
-**Script Descriptions:
+**Script Descriptions:**
 ```
 Set-HighPowerScheme - Applies the high preformance power scheme.
 
@@ -32,7 +32,7 @@ Get-SystemUpdates - Checks if system is Dell and if so it starts the Dell Comman
 Once completed it will then use PSWindowsUpdate powershell tool to check for updates, download updates, and install updates. 
 ```
 
-**Script Commands and configuration:
+**Script Commands and configuration:**
 ```
 - Set-HighPowerScheme
 	CommandFile: C:\PPKG\Set-PowerHighPerformance.ps1 
