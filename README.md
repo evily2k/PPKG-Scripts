@@ -19,7 +19,7 @@ Script Descriptions:
 		- Sets Windows to Dark Mode.
 		- Disables 'Updates are available' message.
 		
-	Get-DattoRMM - Installs the specified DattoRMM agent.
+	Get-DattoRMM - Installs the specified DattoRMM agent .exe file (Not a script).
 	
 	Get-ChocoApp - Installs applications that are listed under the “$applications” variable which currently includes the following:
 		- googlechrome
@@ -35,31 +35,31 @@ Script Descriptions:
 Commands:
 
 	- Set-HighPowerScheme
-	CommandFile: C:\Temp\PPKG\Set-PowerHighPerformance.ps1 
+	CommandFile: C:\PPKG\Set-PowerHighPerformance.ps1 
 	CommandLine: PowerShell.exe -ExecutionPolicy Bypass -File Set-PowerHighPerformance.ps1
 	ContinueInstall: True
 	RestartRequired: False 
 	
 	- Remove-WindowsJunk
-	CommandFile: C:\Temp\PPKG\Remove-WindowsJunk.ps1 
+	CommandFile: C:\PPKG\Remove-WindowsJunk.ps1 
 	CommandLine: PowerShell.exe -ExecutionPolicy Bypass -File Remove-WindowsJunk.ps1
 	ContinueInstall: True
 	RestartRequired: False 
 		
 	- Get-DattoRMM
-	CommandFile: C:\Temp\PPKG\XYZTestCompany.exe 
+	CommandFile: C:\PPKG\XYZTestCompany.exe 
 	CommandLine: cmd /c "XYZTestCompany.exe"
 	ContinueInstall: True
 	RestartRequired: False 
 	
 	- Get-ChocoApps
-	CommandFile: C:\Temp\PPKG\Get-ChocoApps.ps1
+	CommandFile: C:\PPKG\Get-ChocoApps.ps1
 	CommandLine: PowerShell.exe -ExecutionPolicy Bypass -File Get-ChocoApps.ps1
 	ContinueInstall: True
 	RestartRequired: False 
 	
 	- Get-SystemUpdates
-	CommandFile: C:\Temp\PPKG\Get-SystemUpdates.ps1 
+	CommandFile: C:\PPKG\Get-SystemUpdates.ps1 
 	CommandLine: PowerShell.exe -ExecutionPolicy Bypass -File Get-SystemUpdates.ps1
 	ContinueInstall: True
 	RestartRequired: True
