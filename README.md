@@ -21,7 +21,7 @@ Script Descriptions:
 		
 	Get-DattoRMM - Installs the specified DattoRMM agent .exe file (Not a script).
 	
-	Get-ChocoApp - Installs applications that are listed under the “$applications” variable which currently includes the following:
+	Get-ChocoApp - Install all apps that are listed under the “$applications” variable which currently includes the following:
 		- googlechrome
 		- adobereader
 		- office365business
