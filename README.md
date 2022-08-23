@@ -67,3 +67,8 @@ Once completed it will then use PSWindowsUpdate powershell tool to check for upd
 
 **Note:**
 All Script logging is stored in C:\temp. 
+
+Has not been tested on Windows 11 devices.
+
+Windows 11 device failed to remove the following:
+Adobe Express, Spotify, Disney +, Clipchamp Video Editor, Prime Video, Tik Tok, Instagram, and Facebook Messenger are installed
