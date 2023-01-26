@@ -25,6 +25,20 @@ Try{
 	exit 1
 }
 
+# Check that device is online
+function test-networkConnection {
+
+	# Test if there is internet connection
+	$ping = test-connection www.google.com -erroraction silentlycontinue
+	if($ping){
+		Write-Output "The Device is connected to the internet."	
+	}else{
+		write-output "Internet is required for this script. Exiting out of script."
+		Stop-Transcript
+		Exit 0
+	}
+}
+
 # Function to run and install Dell Command updates
 Function updateDell {
 	# Locate dcu-cli.exe and start the Dell Command and Update process
@@ -104,6 +118,9 @@ Function updateWindows {
 }
 
 # Main
+
+# Check that the device is online before starting updates
+test-networkConnection
 
 # Check if device is Dell and if so run Dell Command Updates
 If ((Get-ComputerInfo).CsManufacturer -match "Dell"){updateDell}

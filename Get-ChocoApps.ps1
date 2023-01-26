@@ -12,6 +12,20 @@ Start-Transcript -Path "C:\temp\PPKG-ChocoApps.log"
 # Declarations
 Set-ExecutionPolicy Bypass -Scope Process -Force
 
+# Check that device is online
+function test-networkConnection {
+
+	# Test if there is internet connection
+	$ping = test-connection www.google.com -erroraction silentlycontinue
+	if($ping){
+		Write-Output "The Device is connected to the internet."	
+	}else{
+		write-output "Internet is required for this script. Exiting out of script."
+		Stop-Transcript
+		Exit 0
+	}
+}
+
 # Add any Chocolatey supported applications to this list to be installed
 $applications = @(
 	'googlechrome'
@@ -64,6 +78,9 @@ function InstallChocoApp {
 		Write-Host $($_.Exception.Message)
 	}
 }
+
+# Check that the device is online before starting updates
+test-networkConnection
 
 # Start the Chocolatey install/update
 InstallUpdateChoco
