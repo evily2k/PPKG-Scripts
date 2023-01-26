@@ -113,3 +113,4 @@ updateWindows
 
 # Stop transcript logging
 Stop-Transcript
+Exit 0
