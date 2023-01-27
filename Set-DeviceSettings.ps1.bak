@@ -32,7 +32,7 @@ $regPath = $workingDir + "\" + $regFile
 # Check if the working directory exists
 If(!(test-path $workingDir -PathType Leaf)){new-item $workingDir -ItemType Directory -force}
 
-# Registry file content to disable Privacy Experience variable
+# DattoRMM monitor script to uninstall Huntress when Datto is uninstalled
 $regSetting = @'
 Windows Registry Editor Version 5.00
 
@@ -85,14 +85,14 @@ function set-powerScheme {
 	}
 }
 
+# Test the device is connected to the internet
+#test-networkConnection
+
 # Apply Privacy Experience settings are disabled
 set-privacyExperience
 
 # Set power scheme to high preformance
 set-powerScheme
-
-# Test the device is connected to the internet
-test-networkConnection
 
 Stop-Transcript
 Exit 0
