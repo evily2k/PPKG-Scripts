@@ -3,7 +3,7 @@ TITLE: Get-ChocoApps
 PURPOSE: Used with PPKG file to install 3rd party applications
 CREATOR: Dan Meddock
 CREATED: 28MAR2022
-LAST UPDATED: 22MAY2022
+LAST UPDATED: 26JAN2023
 #>
 
 # Log Windebloater output to log file
