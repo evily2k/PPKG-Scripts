@@ -5,7 +5,10 @@ A collection of scripts that are used with the Windows Configuration Designer to
 
 **Script Descriptions:**
 ```
-Set-HighPowerScheme - Applies the high preformance power scheme.
+Set-DeviceSettings - Applies system settings
+	- Checks that the device is online and if not skips all online related processes
+	- Disabled Windows Privacy experience
+	- Applies the high preformance power scheme.
 
 Remove-WindowsJunk - Runs the Windows Debloater script and does the following:
 	- Removes Blacklisted apps. 
@@ -28,15 +31,16 @@ Get-ChocoApp - Install all apps that are listed under the “$applications” va
 	- 7zip
 	- dellcommandupdate (If system is Dell it will also install.)
 
-Get-SystemUpdates - Checks if system is Dell and if so it starts the Dell Command and Update process. 
-Once completed it will then use PSWindowsUpdate powershell tool to check for updates, download updates, and install updates. 
+Get-SystemUpdates - 
+	- Checks if system is Dell and if so it starts the Dell Command and Update process. 
+	- Then use PSWindowsUpdate powershell tool to check for WIndows updates, download updates, and install updates. 
 ```
 
 **Script Commands and configuration:**
 ```
-- Set-HighPowerScheme
-	CommandFile: C:\PPKG\Set-PowerHighPerformance.ps1 
-	CommandLine: PowerShell.exe -ExecutionPolicy Bypass -File Set-PowerHighPerformance.ps1
+- Set-DeviceSettings
+	CommandFile: C:\PPKG\Set-DeviceSettings.ps1 
+	CommandLine: PowerShell.exe -ExecutionPolicy Bypass -File Set-DeviceSettings.ps1
 	ContinueInstall: True
 	RestartRequired: False 
 
