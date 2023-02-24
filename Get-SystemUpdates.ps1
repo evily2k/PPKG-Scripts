@@ -3,7 +3,7 @@ TITLE: Get-SystemUpdates
 PURPOSE: Used with PPKG file to force device to update all Dell drivers and software and then runs Windows updates
 CREATOR: Dan Meddock
 CREATED: 01APR2022
-LAST UPDATED: 26JAN2023
+LAST UPDATED: 24FEB2023
 #>
 
 # Log System Updates output to log file
@@ -53,7 +53,8 @@ Function updateDell {
 		
 		# Start Dell Command update process; apply all updates and ignore reboot; suspend bitlocker if detected and output log to C:\temp
 		write-host "Running Dell Command and Update to update dell drivers."
-		start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=disable -autoSuspendBitLocker=enable -outputLog=$logFile -Verbose -Wait"
+		start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=disable -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
+		get-content $logFile
 	}Catch{
 		# Catch any powershell errors and output the error message
 		write-host $_.Exception.Message
