@@ -4,7 +4,7 @@ PURPOSE: Used with PPKG file to force device to update all Dell drivers and soft
 CREATOR: Dan Meddock
 CREATED: 01APR2022
 LAST UPDATED: 24FEB2023
-Version 1.1
+VERSION: 1.1
 #>
 
 # Log System Updates output to log file
