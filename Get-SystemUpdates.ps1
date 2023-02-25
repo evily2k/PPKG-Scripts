@@ -4,6 +4,7 @@ PURPOSE: Used with PPKG file to force device to update all Dell drivers and soft
 CREATOR: Dan Meddock
 CREATED: 01APR2022
 LAST UPDATED: 24FEB2023
+Version 1.1
 #>
 
 # Log System Updates output to log file
@@ -48,13 +49,18 @@ Function updateDell {
 		$druLocation64 = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
 		$druLocation32 = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
 		
-		# Find dcu-cli.exe programfile location
-		if (test-path -path $druLocation32 -pathtype leaf){$druDir = $druLocation32}else{$druDir = $druLocation64}	
-		
-		# Start Dell Command update process; apply all updates and ignore reboot; suspend bitlocker if detected and output log to C:\temp
-		write-host "Running Dell Command and Update to update dell drivers."
-		start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=disable -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
-		get-content $logFile
+		if (($druLocation64) -or ($druLocation32)){
+			# Find dcu-cli.exe programfile location
+			if (test-path -path $druLocation32 -pathtype leaf){$druDir = $druLocation32}else{$druDir = $druLocation64}		
+			# Start Dell Command update process; apply all updates and ignore reboot; suspend bitlocker if detected and output log to C:\temp
+			write-host "Running Dell Command and Update to update dell drivers."
+			start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=disable -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
+			get-content $logFile
+		}else{
+			# Dell Command Update was not foun d on this device
+			write-host "Dell Command Update was not installed on this computer."
+			Write-host "Skipping Dell Command Update."
+		}
 	}Catch{
 		# Catch any powershell errors and output the error message
 		write-host $_.Exception.Message
