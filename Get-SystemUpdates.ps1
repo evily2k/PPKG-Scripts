@@ -4,11 +4,6 @@ PURPOSE: Used with PPKG file to force device to update all Dell drivers and soft
 CREATOR: Dan Meddock
 CREATED: 01APR2022
 LAST UPDATED: 24FEB2023
-<<<<<<< HEAD
-Version 1.1
-=======
-VERSION: 1.1
->>>>>>> 19d274d99b1eed7ff910f79c33e2c2d998fb4261
 #>
 
 # Log System Updates output to log file
@@ -32,7 +27,6 @@ Try{
 
 # Check that device is online
 function test-networkConnection {
-
 	# Test if there is internet connection
 	$ping = test-connection www.google.com -erroraction silentlycontinue
 	if($ping){
@@ -61,7 +55,7 @@ Function updateDell {
 			start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=disable -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
 			get-content $logFile
 		}else{
-			# Dell Command Update was not foun d on this device
+			# Dell Command Update was not found on this device
 			write-host "Dell Command Update was not installed on this computer."
 			Write-host "Skipping Dell Command Update."
 		}
@@ -141,8 +135,3 @@ updateWindows
 
 # Stop transcript logging
 Stop-Transcript
-<<<<<<< HEAD
-Exit 0
-=======
-Exit 0
->>>>>>> 19d274d99b1eed7ff910f79c33e2c2d998fb4261
