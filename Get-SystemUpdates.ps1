@@ -114,7 +114,8 @@ Function updateWindows {
 
 			# rename update log
 			$date = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
-			Rename-Item $DownloadDir\PSWindowsUpdate.log -NewName "WindowsUpdate-$date.log"
+			get-content $logFile
+			Rename-Item $logFile -NewName "WindowsUpdate-$date.log"
 		}
 	}catch {
 		# Catch any powershell errors and output the error message
