@@ -3,7 +3,8 @@ TITLE: Get-SystemUpdates
 PURPOSE: Used with PPKG file to force device to update all Dell drivers and software and then runs Windows updates
 CREATOR: Dan Meddock
 CREATED: 01APR2022
-LAST UPDATED: 24MAY2022
+LAST UPDATED: 24FEB2023
+Version 1.1
 #>
 
 # Log System Updates output to log file
@@ -25,6 +26,19 @@ Try{
 	exit 1
 }
 
+# Check that device is online
+function test-networkConnection {
+	# Test if there is internet connection
+	$ping = test-connection www.google.com -erroraction silentlycontinue
+	if($ping){
+		Write-Output "The Device is connected to the internet."	
+	}else{
+		write-output "Internet is required for this script. Exiting out of script."
+		Stop-Transcript
+		Exit 0
+	}
+}
+
 # Function to run and install Dell Command updates
 Function updateDell {
 	# Locate dcu-cli.exe and start the Dell Command and Update process
@@ -34,12 +48,18 @@ Function updateDell {
 		$druLocation64 = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
 		$druLocation32 = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
 		
-		# Find dcu-cli.exe programfile location
-		if (test-path -path $druLocation32 -pathtype leaf){$druDir = $druLocation32}else{$druDir = $druLocation64}	
-		
-		# Start Dell Command update process; apply all updates and ignore reboot; suspend bitlocker if detected and output log to C:\temp
-		write-host "Running Dell Command and Update to update dell drivers."
-		start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=disable -autoSuspendBitLocker=enable -outputLog=$logFile -Verbose -Wait"
+		if (($druLocation64) -or ($druLocation32)){
+			# Find dcu-cli.exe programfile location
+			if (test-path -path $druLocation32 -pathtype leaf){$druDir = $druLocation32}else{$druDir = $druLocation64}		
+			# Start Dell Command update process; apply all updates and ignore reboot; suspend bitlocker if detected and output log to C:\temp
+			write-host "Running Dell Command and Update to update dell drivers."
+			start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=disable -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
+			get-content $logFile
+		}else{
+			# Dell Command Update was not foun d on this device
+			write-host "Dell Command Update was not installed on this computer."
+			Write-host "Skipping Dell Command Update."
+		}
 	}Catch{
 		# Catch any powershell errors and output the error message
 		write-host $_.Exception.Message
@@ -105,6 +125,9 @@ Function updateWindows {
 
 # Main
 
+# Check that the device is online before starting updates
+test-networkConnection
+
 # Check if device is Dell and if so run Dell Command Updates
 If ((Get-ComputerInfo).CsManufacturer -match "Dell"){updateDell}
 
@@ -113,3 +136,4 @@ updateWindows
 
 # Stop transcript logging
 Stop-Transcript
+Exit 0
