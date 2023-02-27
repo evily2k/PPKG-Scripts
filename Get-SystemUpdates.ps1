@@ -3,13 +3,11 @@ TITLE: Get-SystemUpdates
 PURPOSE: Used with PPKG file to force device to update all Dell drivers and software and then runs Windows updates
 CREATOR: Dan Meddock
 CREATED: 01APR2022
-LAST UPDATED: 24FEB2023
+LAST UPDATED: 27FEB2023
 #>
 
 # Log System Updates output to log file
 Start-Transcript -Path "C:\temp\PPKG-SystemUpdates.log"
-
-# Declarations
 
 # Uncomment this line if you are running this script manually through powershell
 #Set-Executionpolicy -Scope CurrentUser -ExecutionPolicy UnRestricted -Confirm:$False -Force
