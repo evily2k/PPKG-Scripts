@@ -4,7 +4,11 @@ PURPOSE: Used with PPKG file to force device to update all Dell drivers and soft
 CREATOR: Dan Meddock
 CREATED: 01APR2022
 LAST UPDATED: 24FEB2023
+<<<<<<< HEAD
 Version 1.1
+=======
+VERSION: 1.1
+>>>>>>> 19d274d99b1eed7ff910f79c33e2c2d998fb4261
 #>
 
 # Log System Updates output to log file
@@ -28,6 +32,7 @@ Try{
 
 # Check that device is online
 function test-networkConnection {
+
 	# Test if there is internet connection
 	$ping = test-connection www.google.com -erroraction silentlycontinue
 	if($ping){
@@ -136,4 +141,8 @@ updateWindows
 
 # Stop transcript logging
 Stop-Transcript
+<<<<<<< HEAD
 Exit 0
+=======
+Exit 0
+>>>>>>> 19d274d99b1eed7ff910f79c33e2c2d998fb4261
