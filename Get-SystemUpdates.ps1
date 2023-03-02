@@ -6,12 +6,15 @@ CREATED: 01APR2022
 LAST UPDATED: 02MAR2023
 #>
 
-# Log System Updates output to log file
+# Log Get-SystemUpdates output to log file
 Start-Transcript -Path "C:\temp\PPKG-SystemUpdates.log"
+
+# Declarations
 
 # Enable script execution
 Set-ExecutionPolicy Bypass -Scope Process -Force
 
+# Enable TLS 1.2 security protocol
 Try{
 	# Set TLS settings
 	[Net.ServicePointManager]::SecurityProtocol = [Enum]::ToObject([Net.SecurityProtocolType], 3072)
@@ -65,7 +68,7 @@ Function updateDell {
 
 # Function to check for all available Windows updates and instal them
 Function updateWindows {
-	
+	# Install PS modules to run Windows Updates
 	Try{
 		# Check if PowerCLI is installed; if not then install it
 		If(!(Get-InstalledModule PSWindowsUpdate -ErrorAction silentlycontinue)){
@@ -112,6 +115,7 @@ Function updateWindows {
 
 			# Save log file content to SystemUpdates log and delete original log file
 			get-content $logFile
+			Sleep 5
 			Remove-Item $logFile -Force
 		}
 	}catch {
