@@ -3,14 +3,13 @@ TITLE: Get-SystemUpdates
 PURPOSE: Used with PPKG file to force device to update all Dell drivers and software and then runs Windows updates
 CREATOR: Dan Meddock
 CREATED: 01APR2022
-LAST UPDATED: 27FEB2023
+LAST UPDATED: 02MAR2023
 #>
 
 # Log System Updates output to log file
 Start-Transcript -Path "C:\temp\PPKG-SystemUpdates.log"
 
-# Uncomment this line if you are running this script manually through powershell
-#Set-Executionpolicy -Scope CurrentUser -ExecutionPolicy UnRestricted -Confirm:$False -Force
+# Enable script execution
 Set-ExecutionPolicy Bypass -Scope Process -Force
 
 Try{
@@ -20,7 +19,7 @@ Try{
 	write-host "- ERROR: Could not implement TLS 1.2 Support."
 	write-host "  This can occur on Windows 7 devices lacking Service Pack 1."
 	write-host "  Please install that before proceeding."
-	exit 1
+	Exit 1
 }
 
 # Check that device is online
@@ -52,6 +51,7 @@ Function updateDell {
 			write-host "Running Dell Command and Update to update dell drivers."
 			start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=disable -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
 			get-content $logFile
+			Remove-Item $logFile -Force
 		}else{
 			# Dell Command Update was not found on this device
 			write-host "Dell Command Update was not installed on this computer."
@@ -110,10 +110,9 @@ Function updateWindows {
 			#removes schedule task from computer
 			Unregister-ScheduledTask -TaskName PSWindowsUpdate -Confirm:$false
 
-			# rename update log
-			$date = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
+			# Save log file content to SystemUpdates log and delete original log file
 			get-content $logFile
-			Rename-Item $logFile -NewName "WindowsUpdate-$date.log"
+			Remove-Item $logFile -Force
 		}
 	}catch {
 		# Catch any powershell errors and output the error message
@@ -134,3 +133,4 @@ updateWindows
 
 # Stop transcript logging
 Stop-Transcript
+Exit 0
