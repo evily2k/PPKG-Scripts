@@ -3,12 +3,13 @@ TITLE: Set-DeviceSettings
 PURPOSE: This script test network connection, disabled Privacy Experience, sets the power scheme to high preformance
 CREATOR: Dan Meddock
 CREATED: 25JAN2023
-LAST UPDATED: 26JAN2023
+LAST UPDATED: 02MAR2023
 #>
 
 # Log Windebloater output to log file
-Start-Transcript -Path "C:\temp\PPKG-setDeviceSettings.log"
+Start-Transcript -Path "C:\temp\PPKG-SetDeviceSettings.log"
 
+# Test the device is connected to the internet
 function test-networkConnection {
 
 	# Test if there is internet connection
@@ -22,6 +23,7 @@ function test-networkConnection {
 	}
 }
 
+# Apply Privacy Experience settings are disabled
 function set-privacyExperience {
 	
 # Declarations
@@ -49,9 +51,10 @@ $regSetting | out-file $regPath
 # Apply registry file using regedit
 Write-Output "Disabling Windows Privacy Experience."
 Start-Process regedit.exe -argumentlist "/s $regPath"
+Remove-Item $regPath -Force
 }
 	
-
+# Set the device power scheme
 function set-powerScheme {
 	
 	# Check if the device is a laptop
@@ -88,7 +91,7 @@ function set-powerScheme {
 # Apply Privacy Experience settings are disabled
 set-privacyExperience
 
-# Set power scheme to high preformance
+# Set the device power scheme
 set-powerScheme
 
 # Test the device is connected to the internet
