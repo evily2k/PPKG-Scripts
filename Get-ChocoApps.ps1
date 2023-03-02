@@ -3,14 +3,24 @@ TITLE: Get-ChocoApps
 PURPOSE: Used with PPKG file to install 3rd party applications
 CREATOR: Dan Meddock
 CREATED: 28MAR2022
-LAST UPDATED: 26JAN2023
+LAST UPDATED: 02MAR2023
 #>
 
 # Log Windebloater output to log file
 Start-Transcript -Path "C:\temp\PPKG-ChocoApps.log"
 
 # Declarations
+
+# Enable script execution
 Set-ExecutionPolicy Bypass -Scope Process -Force
+
+# Add any Chocolatey supported applications to this list to be installed
+$applications = @(
+	'googlechrome'
+	'adobereader'
+	'office365business'
+	'7zip'
+)
 
 # Check that device is online
 function test-networkConnection {
@@ -24,26 +34,6 @@ function test-networkConnection {
 		Stop-Transcript
 		Exit 0
 	}
-}
-
-# Add any Chocolatey supported applications to this list to be installed
-$applications = @(
-	'googlechrome'
-	'adobereader'
-	'office365business'
-	'7zip'
-)
-
-# Check if device manufacture is Dell
-If ((Get-ComputerInfo).CsManufacturer -match "Dell"){$Applications += 'dellcommandupdate'}
-
-# Set TLS settings
-try {
-	[Net.ServicePointManager]::SecurityProtocol = [Enum]::ToObject([Net.SecurityProtocolType], 3072)
-} catch [system.exception] {
-	write-host "- ERROR: Could not implement TLS 1.2 Support."
-	write-host "  This can occur on Windows 7 devices lacking Service Pack 1."
-	write-host "  Please install that before proceeding."
 }
 
 # Download and install Chocolatey
@@ -79,6 +69,28 @@ function InstallChocoApp {
 	}
 }
 
+# Main
+
+# Set TLS settings
+try {
+	[Net.ServicePointManager]::SecurityProtocol = [Enum]::ToObject([Net.SecurityProtocolType], 3072)
+} catch [system.exception] {
+	write-host "- ERROR: Could not implement TLS 1.2 Support."
+	write-host "  This can occur on Windows 7 devices lacking Service Pack 1."
+	write-host "  Please install that before proceeding."
+}
+
+# Check if device manufacture is Dell and if Dell Command needs to be installed
+If ((Get-ComputerInfo).CsManufacturer -match "Dell"){
+	$druLocation64 = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
+	$druLocation32 = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
+	if(!((test-path $druLocation64) -or (test-path $druLocation32))){
+		$Applications += 'dellcommandupdate'
+	}else{
+		write-host "Dell Command is already installed. Skipping installation."
+	}
+}
+
 # Check that the device is online before starting updates
 test-networkConnection
 
@@ -89,3 +101,4 @@ InstallUpdateChoco
 Foreach ($app in $Applications){InstallChocoApp}
 
 Stop-Transcript
+Exit 0
