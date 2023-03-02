@@ -6,7 +6,7 @@ CREATED: 28MAR2022
 LAST UPDATED: 02MAR2023
 #>
 
-# Log Windebloater output to log file
+# Log Get-ChocoApps output to log file
 Start-Transcript -Path "C:\temp\PPKG-ChocoApps.log"
 
 # Declarations
@@ -24,7 +24,6 @@ $applications = @(
 
 # Check that device is online
 function test-networkConnection {
-
 	# Test if there is internet connection
 	$ping = test-connection www.google.com -erroraction silentlycontinue
 	if($ping){
@@ -71,7 +70,7 @@ function InstallChocoApp {
 
 # Main
 
-# Set TLS settings
+# Enable TLS 1.2 security protocol
 try {
 	[Net.ServicePointManager]::SecurityProtocol = [Enum]::ToObject([Net.SecurityProtocolType], 3072)
 } catch [system.exception] {
