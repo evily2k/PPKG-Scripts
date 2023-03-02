@@ -6,8 +6,10 @@ CREATED: 14MAR2022
 LAST UPDATED: 02MAR2023
 #>
 
-# Log Windebloater output to log file
+# Log Remove-WindowsJunk output to log file
 Start-Transcript -Path "C:\temp\PPKG-WindowsDebloater.log"
+
+# Declarations
 
 # Creates a PSDrive to be able to access the 'HKCR' tree
 New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
@@ -80,6 +82,7 @@ Function DebloatBlacklist {
     }
 }
 
+# Removes Registry keys that are no longer needed
 Function Remove-Keys {        
     Param([switch]$Debloat)    
     # These are the registry keys that it will delete.        
@@ -122,7 +125,8 @@ Function Remove-Keys {
         Remove-Item $Key -Recurse -ErrorAction SilentlyContinue
     }
 }
-        
+
+# Stops telemetry, disabling unneccessary scheduled tasks, and preventing bloatware from returning.      
 Function Protect-Privacy {    
     Param([switch]$Debloat)
     # Creates a PSDrive to be able to access the 'HKCR' tree
@@ -235,7 +239,7 @@ Function Protect-Privacy {
     
     # Disables scheduled tasks that are considered unnecessary 
     Write-Output "Disabling scheduled tasks"
-    Get-ScheduledTask -TaskName XblGameSaveTaskLogon | Disable-ScheduledTask -ErrorAction SilentlyContinue
+    Get-ScheduledTask -TaskName XblGameSaveTaskLogon -ErrorAction SilentlyContinue | Disable-ScheduledTask -ErrorAction SilentlyContinue
     Get-ScheduledTask -TaskName XblGameSaveTask | Disable-ScheduledTask -ErrorAction SilentlyContinue
     Get-ScheduledTask -TaskName Consolidator | Disable-ScheduledTask -ErrorAction SilentlyContinue
     Get-ScheduledTask -TaskName UsbCeip | Disable-ScheduledTask -ErrorAction SilentlyContinue
