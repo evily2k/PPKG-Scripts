@@ -6,12 +6,13 @@ CREATED: 25JAN2023
 LAST UPDATED: 02MAR2023
 #>
 
-# Log Windebloater output to log file
+# Log Set-DeviceSettings output to log file
 Start-Transcript -Path "C:\temp\PPKG-SetDeviceSettings.log"
+
+# Declarations
 
 # Test the device is connected to the internet
 function test-networkConnection {
-
 	# Test if there is internet connection
 	$ping = test-connection www.google.com -erroraction silentlycontinue
 	if($ping){
@@ -51,6 +52,7 @@ $regSetting | out-file $regPath
 # Apply registry file using regedit
 Write-Output "Disabling Windows Privacy Experience."
 Start-Process regedit.exe -argumentlist "/s $regPath"
+Sleep 5
 Remove-Item $regPath -Force
 }
 	
@@ -61,24 +63,23 @@ function set-powerScheme {
 	$laptop = Get-WmiObject -Class win32_systemenclosure | ? { $_.chassistypes -eq 9 -or $_.chassistypes -eq 10 -or $_.chassistypes -eq 14}
 	
 	if($laptop){
-		# Set High Preformance power scheme
-		Write-Output "Applying laptop power plan..."
 		
-		#capture the active scheme GUID
+		# Capture the active scheme GUID
 		$activeScheme = powercfg.exe /getactivescheme
 		$regEx = '(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 		$asGuid = [regex]::Match($activeScheme,$regEx).Value
 		
-		#relative GUIDs for Lid Close settings
+		# Relative GUIDs for Lid Close settings
 		$pwrGuid = '4f971e89-eebd-4455-a8de-9e59040e7347'
 		$lidClosedGuid = '5ca83367-6e45-459f-a27b-476b1d01c936'
 		
 		# DC Value // On Battery // 1 = sleep
 		powercfg.exe /setdcvalueindex $asGuid $pwrGuid $lidClosedGuid 1
-		#AC Value // While plugged in // 0 = do nothing
+		# AC Value // While plugged in // 0 = do nothing
 		powercfg.exe /setacvalueindex $asGuid $pwrGuid $lidClosedGuid 0
 		
-		#apply settings
+		# Apply settings
+		Write-Output "Applying laptop power plan..."
 		powercfg.exe /s $asGuid
 		
 	}else{
@@ -88,6 +89,38 @@ function set-powerScheme {
 	}
 }
 
+# Set time zone based off public IP location
+function setTimeZone {
+	
+	# API token for ipinfo.io (create a free sccount)
+	$apiKey = 'XXXXXXXXXXXXXXXXXXXX'
+	$locData = Invoke-RestMethod "https://ipinfo.io?token=$apiKey" -ContentType 'Application/Json'
+	
+	# Table to match location ID to correct timezone
+	$tzList = @{
+		#region snippet of the countr / iana code table
+		"America/Chicago" = "Central Standard Time"
+		"America/New_York" = "Eastern Standard Time"
+		"America/Denver"  = "Mountain Standard Time"
+		"America/Los_Angeles" = "Pacific Standard Time"
+		#endregion
+	}
+	
+	# Match location ID to correct timezone
+	$windowsId = $tzList.Get_Item($locData.timezone)
+	if ($windowsId) {
+		$result = $windowsId
+	}else{
+		$result = ($tzList.GetEnumerator() | Where-Object { $_.Key -like "*$($locData.timezone)*" }).Value
+	}
+	
+	# Set timezone
+	Write-Host "Setting timezone to $result.."
+	Set-TimeZone -Id $result
+}
+
+# Main
+
 # Apply Privacy Experience settings are disabled
 set-privacyExperience
 
@@ -96,6 +129,9 @@ set-powerScheme
 
 # Test the device is connected to the internet
 test-networkConnection
+
+# Set timezone based on IP location data
+setTimeZone
 
 Stop-Transcript
 Exit 0
