@@ -9,6 +9,8 @@ Set-DeviceSettings - Applies system settings
 	- Checks that the device is online and if not skips all online related processes
 	- Disabled Windows Privacy experience
 	- Applies the high preformance power scheme.
+	- Sets the system time using an online ping service to report the IPs location
+	- THe ping service also servers as a metrics source which will keep track of how many times the PPKG is used
 
 Remove-WindowsJunk - Runs the Windows Debloater script and does the following:
 	- Removes Blacklisted apps. 
