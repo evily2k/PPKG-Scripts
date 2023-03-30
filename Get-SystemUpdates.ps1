@@ -3,7 +3,7 @@ TITLE: Get-SystemUpdates
 PURPOSE: Used with PPKG file to force device to update all Dell drivers and software and then runs Windows updates
 CREATOR: Dan Meddock
 CREATED: 01APR2022
-LAST UPDATED: 02MAR2023
+LAST UPDATED: 28MAR2023
 #>
 
 # Log Get-SystemUpdates output to log file
@@ -38,32 +38,53 @@ function test-networkConnection {
 	}
 }
 
-# Function to run and install Dell Command updates
-Function updateDell {
-	# Locate dcu-cli.exe and start the Dell Command and Update process
-	Try{
-		# Download direcotry and DCU-CLI variables
-		$logFile = "C:\temp\dellUpdate.log"
-		$druLocation64 = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
-		$druLocation32 = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
-		
-		if (($druLocation64) -or ($druLocation32)){
-			# Find dcu-cli.exe programfile location
-			if (test-path -path $druLocation32 -pathtype leaf){$druDir = $druLocation32}else{$druDir = $druLocation64}		
-			# Start Dell Command update process; apply all updates and ignore reboot; suspend bitlocker if detected and output log to C:\temp
-			write-host "Running Dell Command and Update to update dell drivers."
-			start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=disable -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
-			get-content $logFile
-			Remove-Item $logFile -Force
-		}else{
-			# Dell Command Update was not found on this device
-			write-host "Dell Command Update was not installed on this computer."
-			Write-host "Skipping Dell Command Update."
-		}
-	}Catch{
-		# Catch any powershell errors and output the error message
-		write-host $_.Exception.Message
-	}
+# Function to schedule Dell Command updates for next reboot
+function scheduleDCU {
+	# powershell script used in scheduled task
+	$installScript = "C:\Temp\runDCU.ps1"
+	write-host "Scheduling Dell Command Update to run after next reboot."
+
+# Commands to run Dell Command and apply updates
+$installCommand = @'
+# Download direcotry and DCU-CLI variables
+$installScript = "C:\Temp\runDCU.ps1"
+$logFile = "C:\temp\dellUpdate.log"
+$ppkgLog = "C:\temp\PPKG-SystemUpdates.log"
+$druLocation64 = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
+$druLocation32 = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
+
+if (($druLocation64) -or ($druLocation32)){
+	# Find dcu-cli.exe programfile location
+	if (test-path -path $druLocation32 -pathtype leaf){$druDir = $druLocation32}else{$druDir = $druLocation64}		
+	# Start Dell Command update process; apply all updates and ignore reboot; suspend bitlocker if detected and output log to C:\temp
+	write-host "Running Dell Command and Update to update dell drivers."
+	start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=enable -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
+	Start-Sleep -Seconds 5
+	Unregister-ScheduledTask -TaskName "DellCommandUpdate" -Confirm:$false
+	get-content $logFile | add-content $ppkgLog
+	Start-Sleep -Seconds 5
+	Remove-item -path $logFile -Force
+	Remove-Item -Path $installScript -Force
+}else{
+	# Dell Command Update was not found on this device
+	write-host "Dell Command Update was not installed on this computer."
+	Write-host "Skipping Dell Command Update and removing scheduled task."
+	Unregister-ScheduledTask -TaskName "DellCommandUpdate" -Confirm:$false
+	Remove-Item -Path $installScript -Force
+}
+'@
+
+	# Output scriptblock to directory
+	$installCommand | out-file $installScript
+
+	# Create Scheduled task
+	$taskname = "DellCommandUpdate"
+	$action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-executionpolicy bypass -noprofile -file $installScript"
+	$trigger = New-ScheduledTaskTrigger -AtStartup -RandomDelay 00:00:30
+	$principal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+	$task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal
+	Register-ScheduledTask $taskname -InputObject $task
+	Write-Host "Dell Command Update will run after the next system reboot and log file will be at C:\temp\dellUpdate.log"
 }
 
 # Function to check for all available Windows updates and instal them
@@ -130,7 +151,7 @@ Function updateWindows {
 test-networkConnection
 
 # Check if device is Dell and if so run Dell Command Updates
-If ((Get-ComputerInfo).CsManufacturer -match "Dell"){updateDell}
+If ((Get-ComputerInfo).CsManufacturer -match "Dell"){scheduleDCU}
 
 # Run Windows updates
 updateWindows
