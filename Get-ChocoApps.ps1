@@ -3,7 +3,7 @@ TITLE: Get-ChocoApps
 PURPOSE: Used with PPKG file to install 3rd party applications
 CREATOR: Dan Meddock
 CREATED: 28MAR2022
-LAST UPDATED: 02MAR2023
+LAST UPDATED: 28MAR2023
 #>
 
 # Log Get-ChocoApps output to log file
@@ -18,7 +18,6 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 $applications = @(
 	'googlechrome'
 	'adobereader'
-	'office365business'
 	'7zip'
 )
 
@@ -54,7 +53,7 @@ function InstallChocoApp {
 			$app.Split(" ") | % {
 				if (!($_ -like " ") -and $_.length -ne 0) {
 					Write-Host Installing $_ 
-					& cmd /c """$env:ChocolateyInstall\choco.exe"" install $_ -y"
+					& cmd /c """$env:ChocolateyInstall\choco.exe"" install $_ -y --ignore-checksums"
 				}
 			}
 		} else {
@@ -79,15 +78,28 @@ try {
 	write-host "  Please install that before proceeding."
 }
 
-# Check if device manufacture is Dell and if Dell Command needs to be installed
-If ((Get-ComputerInfo).CsManufacturer -match "Dell"){
-	$druLocation64 = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
-	$druLocation32 = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
-	if(!((test-path $druLocation64) -or (test-path $druLocation32))){
-		$Applications += 'dellcommandupdate'
-	}else{
-		write-host "Dell Command is already installed. Skipping installation."
+# Check if Office or DCU should be installed
+Try{
+	# Check if device manufacture is Dell and if Dell Command needs to be installed
+	If ((Get-ComputerInfo).CsManufacturer -match "Dell"){
+		$druLocation64 = "C:\Program Files (x86)\Dell\CommandUpdate\dcu-cli.exe"
+		$druLocation32 = "C:\Program Files\Dell\CommandUpdate\dcu-cli.exe"
+		if(!((test-path $druLocation64) -or (test-path $druLocation32))){
+			write-host "Adding Dell Command to the list of applications to install."
+			$Applications += 'dellcommandupdate'		
+		}else{
+			write-host "Dell Command is already installed. Skipping installation."
+		}
 	}
+
+	# Check if office is preinstalled
+	$officeCheckC2R = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration" -Name "VersionToReport" -erroraction silentlycontinue
+	if($officeCheckC2R -eq $null){
+		write-host "Adding Microsoft Office to the list of applications to install."
+		$Applications += 'office365business'
+	}
+}Catch{
+	Write-Host $($_.Exception.Message)
 }
 
 # Check that the device is online before starting updates
@@ -96,8 +108,9 @@ test-networkConnection
 # Start the Chocolatey install/update
 InstallUpdateChoco
 
-# Start the Chocolatey application install
+# Start the Chocolatey application install and exit when finished
+write-host "Installing the following applications via Chocolatey:"
+write-host "$applications`n"
 Foreach ($app in $Applications){InstallChocoApp}
-
 Stop-Transcript
 Exit 0
