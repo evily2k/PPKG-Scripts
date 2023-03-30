@@ -3,7 +3,7 @@ TITLE: Set-DeviceSettings
 PURPOSE: This script test network connection, disabled Privacy Experience, sets the power scheme to high preformance
 CREATOR: Dan Meddock
 CREATED: 25JAN2023
-LAST UPDATED: 02MAR2023
+LAST UPDATED: 28MAR2023
 #>
 
 # Log Set-DeviceSettings output to log file
@@ -81,6 +81,7 @@ function set-powerScheme {
 		# Apply settings
 		Write-Output "Applying laptop power plan..."
 		powercfg.exe /s $asGuid
+		powercfg.exe /x -standby-timeout-ac 0
 		
 	}else{
 		# Set High Preformance power scheme
@@ -92,8 +93,8 @@ function set-powerScheme {
 # Set time zone based off public IP location
 function setTimeZone {
 	
-	# API token for ipinfo.io (create a free sccount)
-	$apiKey = 'XXXXXXXXXXXXXXXXXXXX'
+	# API token for ipinfo.io
+	$apiKey = 'XXXXXXXXXXXXXX'
 	$locData = Invoke-RestMethod "https://ipinfo.io?token=$apiKey" -ContentType 'Application/Json'
 	
 	# Table to match location ID to correct timezone
