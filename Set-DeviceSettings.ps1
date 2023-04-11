@@ -93,7 +93,7 @@ function set-powerScheme {
 # Set time zone based off public IP location
 function setTimeZone {
 	
-	# API token for ipinfo.io
+	# API token for ipinfo.io	
 	$apiKey = 'XXXXXXXXXXXXXX'
 	$locData = Invoke-RestMethod "https://ipinfo.io?token=$apiKey" -ContentType 'Application/Json'
 	

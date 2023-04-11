@@ -109,7 +109,7 @@ Function updateWindows {
 
 		#if there are available updates proceed with installing the updates and then reboot the remote machine
 		if ($updates -ne $null){			
-			# Install windows updates, creates a scheduled task on computer -AutoReboot
+			# Install windows updates, creates a scheduled task (Invoke-WUjob) on computer -AutoReboot
 			$script = ipmo PSWindowsUpdate; Install-WindowsUpdate -AcceptAll -IgnoreReboot | Out-File $logFile
 			Invoke-WUjob -ComputerName localhost -Script $script -Confirm:$false -RunNow -Verbose
 			 
@@ -139,7 +139,7 @@ Function updateWindows {
 			Sleep 5
 			Remove-Item $logFile -Force
 		}
-	}catch {
+	}catch{
 		# Catch any powershell errors and output the error message
 		Write-Error $_.Exception.Message
 	}
