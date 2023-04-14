@@ -105,7 +105,7 @@ Function updateWindows {
 		$updatenumber = ($updates.kb).count
 		
 		# Check if folders exis
-		if (!(Test-Path $DownloadDir)){New-Item -ItemType Directory -Path $DownloadDir}
+		if (!(Test-Path $DownloadDir)){New-Item -ItemType Directory -Path $DownloadDir | Out-Null}
 
 		#if there are available updates proceed with installing the updates and then reboot the remote machine
 		if ($updates -ne $null){			

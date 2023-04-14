@@ -33,7 +33,7 @@ $regFile = "disablePrivacy.reg"
 $regPath = $workingDir + "\" + $regFile
 
 # Check if the working directory exists
-If(!(test-path $workingDir -PathType Leaf)){new-item $workingDir -ItemType Directory -force}
+If(!(test-path $workingDir -PathType Leaf)){new-item $workingDir -ItemType Directory -force | Out-Null}
 
 # Registry file content to disable Privacy Experience variable
 $regSetting = @'
@@ -93,8 +93,9 @@ function set-powerScheme {
 # Set time zone based off public IP location
 function setTimeZone {
 	
-	# API token for ipinfo.io	
-	$apiKey = 'XXXXXXXXXXXXXX'
+	# API token for ipinfo.io
+	$apiKey = 'dc4d5fc52d0086'
+	#$apiKey = 'XXXXXXXXXXXXXX'
 	$locData = Invoke-RestMethod "https://ipinfo.io?token=$apiKey" -ContentType 'Application/Json'
 	
 	# Table to match location ID to correct timezone
