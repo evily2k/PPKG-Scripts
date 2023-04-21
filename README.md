@@ -1,7 +1,7 @@
 # PPKG Scripts for automated computer setup and prep
 **Scripts to use with PPKG setup file to automate computer setup process**
 
-You will need to edit the Set-DeviceSettings script. There is a function called "setTimeZone" with a API token which will need to be changed once you have setup an account with ipinfo.io and generate your own token. I accidentally released a copy with my token included so I have since setup whitelisting so the token will only work from my IP. If you dont want to create an account to get your own token then just comment the line 136 where it says "setTimeZone" and then the script will run without errors.
+You will need to edit the Set-DeviceSettings script. There is a function called "setTimeZone" with a API token which will need to be changed once you have setup an account with ipinfo.io and generate your own token. I accidentally released a copy with my token included so I have since setup whitelisting so the token will only work from my IP. If you dont want to create an account to get your own token then just comment the line 136 where it says "setTimeZone" and then the script will run without errors. Using the ipinfo token will also mean you have metrics for how many times the PPKG was used because it logs every ping to the site. So not only is that function good to set the timezone but its also a way to get metrics on how often the PPKG file is used.
 
 A collection of scripts that are used with the Windows Configuration Designer to build a PPKG file. The scripts will do the following:
 
