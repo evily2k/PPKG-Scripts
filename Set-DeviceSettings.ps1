@@ -94,8 +94,7 @@ function set-powerScheme {
 function setTimeZone {
 	
 	# API token for ipinfo.io
-	$apiKey = 'dc4d5fc52d0086'
-	#$apiKey = 'XXXXXXXXXXXXXX'
+	$apiKey = 'XXXXXXXXXXXXXX'
 	$locData = Invoke-RestMethod "https://ipinfo.io?token=$apiKey" -ContentType 'Application/Json'
 	
 	# Table to match location ID to correct timezone
