@@ -3,7 +3,7 @@ TITLE: Get-ChocoApps
 PURPOSE: Used with PPKG file to install 3rd party applications
 CREATOR: Dan Meddock
 CREATED: 28MAR2022
-LAST UPDATED: 28MAR2023
+LAST UPDATED: 25APR2023
 #>
 
 # Log Get-ChocoApps output to log file
