@@ -3,7 +3,7 @@ TITLE: Get-SystemUpdates
 PURPOSE: Used with PPKG file to force device to update all Dell drivers and software and then runs Windows updates
 CREATOR: Dan Meddock
 CREATED: 01APR2022
-LAST UPDATED: 28MAR2023
+LAST UPDATED: 05MAY2023
 #>
 
 # Log Get-SystemUpdates output to log file
@@ -58,7 +58,7 @@ if (($druLocation64) -or ($druLocation32)){
 	if (test-path -path $druLocation32 -pathtype leaf){$druDir = $druLocation32}else{$druDir = $druLocation64}		
 	# Start Dell Command update process; apply all updates and ignore reboot; suspend bitlocker if detected and output log to C:\temp
 	write-host "Running Dell Command and Update to update dell drivers."
-	start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=enable -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
+	start-process -NoNewWindow $druDir -ArgumentList "/applyUpdates -silent -reboot=enable -updateType=bios,firmware,driver -autoSuspendBitLocker=enable -outputLog=$logFile" -Wait
 	Start-Sleep -Seconds 5
 	Unregister-ScheduledTask -TaskName "DellCommandUpdate" -Confirm:$false
 	get-content $logFile | add-content $ppkgLog
